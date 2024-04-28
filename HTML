@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Searce</title>
+<meta name="description" content="">
+<meta name="author" content="">
+
+<!-- Include CSS -->
+<?!= include("CSS");?> 
+
+</head>
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+<!-- Navigation -->
+<nav id="menu" class="navbar navbar-default navbar-fixed-top">
+  <div class="container"> 
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+    </div>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        
+        <!-- Other Menu Items -->
+        <li><a href="#restaurant-menu" class="page-scroll">Home</a></li>
+        <li><a href="#team" class="page-scroll">About</a></li>
+        <li><a href="#contact" class="page-scroll">Contact</a></li>
+        <!-- Region Filter -->
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Region <span class="caret"></span></a>
+          <ul class="dropdown-menu" id="regionMenu">
+            <!-- Region options will be populated dynamically -->
+            <li><a href="#" data-region="Region1">Region 1</a></li>
+            <li><a href="#" data-region="Region2">Region 2</a></li>
+            <!-- Add more region options here -->
+          </ul>
+        </li>
+        
+        <!-- Department Filter -->
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Department <span class="caret"></span></a>
+          <ul class="dropdown-menu" id="departmentMenu">
+            <li><a href="#" data-department="all">All Departments</a></li>
+            <!-- Department options will be populated dynamically -->
+          </ul>
+        </li>        
+      </ul>
+    </div>
+    <!-- /.navbar-collapse --> 
+  </div>
+</nav>
+
+<!-- Header -->
+<header id="header" style="background-color: #FFFFFF;">
+  <div class="intro" style="background-color: #FFFFFF;">
+    <div class="overlay">
+      <div class="container">
+        <div class="row">
+          <div class="intro-text" >
+            <h1>Searce AutoCreate</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Container below header -->
+<div class="container-fluid" style="background-color: #0064FF; padding-top: 50px; padding-bottom: 50px;">
+  <div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+      <p style="color: #FFFFFF;">Select from the filters and click search to get your Files.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- Filter Section -->
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <label for="region">Region:</label>
+      <select id="region" class="form-control">
+        <option value="all">All Regions</option>
+        <option value="Region1">Region 1</option>
+        <option value="Region2">Region 2</option>
+        <!-- Add more region options here -->
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label for="department">Department:</label>
+      <select id="department" class="form-control">
+        <option value="all">All Departments</option>
+        <!-- Department options will be populated dynamically -->
+      </select>
+    </div>
+    <div class="col-md-4">
+      <button id="filterBtn" class="btn btn-primary">Apply Filters</button>
+    </div>
+  </div>
+</div>
+
+<!-- Dynamic Table Section -->
+<div id="table-container">
+<div class="container text-center">
+  <div class="row">
+    <div class="col-md-12">
+      <div id="table-container">
+        <!-- Your table code here -->
+        <table id="dataTable" class="table table-striped">
+          <thead>
+            <tr>
+              <th>File Name</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Table body content will be added dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+<!-- Footer -->
+<div id="footer">
+  <div class="container text-center">
+    <div class="col-md-6">
+      <p>&copy; 2024 Searce. All rights reserved. Design by <a href="https://www.searce.com/" rel="nofollow">Searce</a></p>
+    </div>
+    <div class="col-md-6">
+      <div class="social">
+        <ul>
+          <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+          <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+          <li><a href="#"><i class="fa fa-youtube"></i></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Include JavaScript -->
+<?!= include("JS");?> 
+
+<script>
+// Define the folder IDs for each region and department
+var regionFolderIds = {
+  "Region1": "1JVU4rTcxpW9hPk2zv-vXQx44y_em_hfY",
+  "Region2": "1JhUl96Q5H7nZKm9TjOlKsPVMbYfcH681",
+  // Add more regions as needed
+};
+
+var departmentFolderIds = {
+  "Department1": "1JalZkGbh4znAjwrbRKAS81bc9LgX-UkH",
+  "Department2": "1JsCKzh75J_DjSrr5t2mJerkzwibMzO4O",
+  // Add more departments as needed
+};
+
+// Function to retrieve files from the specified folder
+function getFilesFromFolder(folderId) {
+  var url = "https://content.googleapis.com/drive/v3/files?q='" + folderId + "' in parents&pageSize=10&fields=files(id%2C%20name)&key=YOUR_KEY";
+
+  return fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to retrieve files from Google Drive');
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.files && data.files.length > 0) {
+        return data.files;
+      } else {
+        throw new Error('No files found in the specified folder');
+      }
+    })
+    .catch(error => {
+      console.error("Error retrieving files from Google Drive: ", error);
+    });
+}
+
+// Function to populate the department dropdown menu based on the selected region
+function populateDepartmentMenu(region) {
+  var departmentMenu = document.getElementById("departmentMenu");
+  departmentMenu.innerHTML = "";
+  
+  var option = document.createElement("option");
+  option.value = "all";
+  option.text = "All Departments";
+  departmentMenu.appendChild(option);
+  
+  var departmentFolderId = regionFolderIds[region];
+  if (departmentFolderId) {
+    getFilesFromFolder(departmentFolderId)
+      .then(files => {
+        files.forEach(file => {
+          var option = document.createElement("option");
+          option.value = file.id;
+          option.text = file.name;
+          departmentMenu.appendChild(option);
+        });
+      })
+      .catch(error => {
+        console.error("Error populating department menu: ", error);
+      });
+  }
+}
+
+// Add event listener to the region dropdown menu
+document.getElementById("region").addEventListener("change", function() {
+  var region = this.value;
+  populateDepartmentMenu(region);
+});
+
+// Add event listener to the "Apply Filters" button
+document.getElementById("filterBtn").addEventListener("click", function() {
+  var region = document.getElementById("region").value;
+  var department = document.getElementById("department").value;
+
+  var departmentFolderId = department;
+  if (department === "all") {
+    var regionFolderId = regionFolderIds[region];
+    if (regionFolderId) {
+      getFilesFromFolder(regionFolderId)
+        .then(files => {
+          // Populate the table with the files
+          populateTable(files);
+        });
+    }
+  } else {
+    if (departmentFolderId) {
+      getFilesFromFolder(departmentFolderId)
+        .then(files => {
+          // Populate the table with the files
+          populateTable(files);
+        });
+    } else {
+      console.error("Department folder not found:", department);
+    }
+  }
+});
+
+// Function to populate the table with file names as hyperlinks
+function populateTable(files) {
+  var fileTableContent = "";
+  if (files.length === 0) {
+    fileTableContent = "<tr><td colspan='1'>No results</td></tr>";
+  } else {
+    files.forEach(file => {
+      fileTableContent += "<tr><td><a href='https://drive.google.com/file/d/" + file.id + "/view' target='_blank'>" + file.name + "</a></td></tr>";
+    });
+  }
+  document.getElementById("tableBody").innerHTML = fileTableContent;
+}
+</script>
+
+</body>
+</html>
